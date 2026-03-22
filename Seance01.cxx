@@ -1,0 +1,208 @@
+#include<iostream>
+using namespace std;
+
+const int N=64 , L=8 ,C=8;
+
+enum square{
+    Ntour,
+    Ncavalier, 
+    Nfou, 
+    Ndame, 
+    Nroi, 
+    Npion, 
+    Btour, 
+    Bcavalier, 
+    Bfou, 
+    Bdame, 
+    Broi, 
+    Bpion,
+    vide,
+};
+
+// Le plateu est vide
+void empty(square Plateau1D[N]){
+    for(int i=0 ; i<N ;i++){
+        Plateau1D[i]=vide;
+    }
+}
+
+void empty(square Plateau2D[L][C]){
+    for(int i=0 ; i<L;i++){
+        for(int j=0 ; j<C ; j++){
+            Plateau2D[i][j]=vide;
+        }
+    }
+}
+
+// ---------------- GET ----------------
+
+square get_square_1D(square Plateau1D[N] , int l , int c){
+    if (l < 0 || l >= L || c < 0 || c >= C){
+        cout << "Erreur acces (" << l << "," << c << ")" << endl;
+        return vide;
+    }
+    int empl=l*C+c;
+    square ContenuCase=Plateau1D[empl];
+    return ContenuCase;
+}
+
+square get_square_2D(square Plateau2D[L][C] , int l , int c){
+    if (l < 0 || l >= L || c < 0 || c >= C){
+        cout << "Erreur acces (" << l << "," << c << ")" << endl;
+        return vide;
+    }
+    square ContenuCase=Plateau2D[l][c];
+    return ContenuCase;
+}
+
+// ---------------- SET ----------------
+
+void set_square_1D(square Plateau1D[N] , int l, int c , square piece){
+    if (l < 0 || l >= L || c < 0 || c >= C){
+        cout << "Erreur ecriture (" << l << "," << c << ")" << endl;
+        return;
+    }
+    Plateau1D[l*C+c]=piece;
+}
+
+void set_square_2D(square Plateau2D[L][C] , int l , int c , square piece){
+    if (l < 0 || l >= L || c < 0 || c >= C){
+        cout << "Erreur ecriture (" << l << "," << c << ")" << endl;
+        return;
+    }
+    Plateau2D[l][c]=piece;
+}
+
+// ---------------- START ----------------
+
+void start(square Plateau1D[N]){
+    empty(Plateau1D);
+
+    for(int c=0 ; c<8 ; c++){
+        Plateau1D[1*C+c]=Bpion;
+        Plateau1D[6*C+c]=Npion;
+    }
+
+    Plateau1D[0]=Btour;
+    Plateau1D[7]=Btour;
+    Plateau1D[7*C+0]=Ntour;
+    Plateau1D[7*C+7]=Ntour;
+
+    Plateau1D[1]=Bcavalier;
+    Plateau1D[6]=Bcavalier;
+    Plateau1D[7*C+1]=Ncavalier;
+    Plateau1D[7*C+6]=Ncavalier;
+
+    Plateau1D[2]=Bfou;
+    Plateau1D[5]=Bfou;
+    Plateau1D[7*C+2]=Nfou;
+    Plateau1D[7*C+5]=Nfou;
+
+    Plateau1D[3]=Bdame;
+    Plateau1D[7*C+3]=Ndame;
+
+    Plateau1D[4]=Broi;
+    Plateau1D[7*C+4]=Nroi;
+}
+
+void start(square Plateau2D[L][C]){
+    empty(Plateau2D);
+
+    for(int c=0 ; c<8 ; c++){
+        Plateau2D[1][c]=Bpion; 
+        Plateau2D[6][c]=Npion; 
+    }
+
+    Plateau2D[0][0]=Btour;
+    Plateau2D[0][7]=Btour;
+    Plateau2D[7][0]=Ntour;
+    Plateau2D[7][7]=Ntour;
+
+    Plateau2D[0][1]=Bcavalier;
+    Plateau2D[0][6]=Bcavalier;
+    Plateau2D[7][1]=Ncavalier;
+    Plateau2D[7][6]=Ncavalier;
+
+    Plateau2D[0][2]=Bfou;
+    Plateau2D[0][5]=Bfou;
+    Plateau2D[7][2]=Nfou;
+    Plateau2D[7][5]=Nfou;
+
+    Plateau2D[0][3]=Bdame;
+    Plateau2D[7][3]=Ndame;
+
+    Plateau2D[0][4]=Broi;
+    Plateau2D[7][4]=Nroi;
+}
+
+// ---------------- MOVE ----------------
+
+void move_piece(square Plateau1D[N] , int l1 , int c1 , int l2 , int c2){
+    if (l1 < 0 || l1 >= L || c1 < 0 || c1 >= C ||
+        l2 < 0 || l2 >= L || c2 < 0 || c2 >= C){
+        cout << "Erreur mouvement !" << endl;
+        return;
+    }
+
+    Plateau1D[l2*C+c2]=Plateau1D[l1*C+c1];
+    Plateau1D[l1*C+c1]=vide;
+}
+
+void move_piece( square Plateau2D[L][C] , int l1 , int c1 , int l2 , int c2){
+    if (l1 < 0 || l1 >= L || c1 < 0 || c1 >= C ||
+        l2 < 0 || l2 >= L || c2 < 0 || c2 >= C){
+        cout << "Erreur mouvement !" << endl;
+        return;
+    }
+
+   square piece=get_square_2D(Plateau2D, l1 ,c1);
+   set_square_2D(Plateau2D , l2 ,c2 , piece);
+   Plateau2D[l1][c1]=vide;
+}
+
+// ---------------- MAIN ----------------
+
+int main(){
+    int l1 ,c1 , l2 , c2;
+    square Plateau1D[N];
+    square Plateau2D[L][C];
+
+    empty(Plateau1D);
+    empty(Plateau2D);
+
+    start(Plateau1D);
+    start(Plateau2D);
+
+    square piece1=get_square_1D(Plateau1D,0,0);
+    cout<<"piece 1 est : "<<piece1<<endl;
+
+    square piece2=get_square_2D(Plateau2D,0,0);
+    cout<<"piece 2 est : "<<piece2<<endl;
+
+    set_square_1D(Plateau1D,0,5,Btour);
+    set_square_2D(Plateau2D,0,5,Btour);
+
+    cout<<"Case de depart (ligne et colonne) :";
+    cin>>l1>>c1;
+    cout<<"Case d'arrivee (ligne et colonne) :";
+    cin>>l2>>c2;
+
+    l1=l1-1;
+    c1=c1-1;
+    l2=l2-1;
+    c2=c2-1;
+
+    if (l1 < 0 || l1 >= 8 || c1 < 0 || c1 >= 8 ||
+        l2 < 0 || l2 >= 8 || c2 < 0 || c2 >= 8){
+        cout<<"Coordonnees invalides !"<<endl;
+        return 1;
+    }
+
+    move_piece(Plateau1D,l1,c1,l2,c2);
+    cout<<"piece 1 apres mouvement 1D :" << get_square_1D(Plateau1D,l2,c2)<<endl;
+
+    move_piece(Plateau2D,l1,c1,l2,c2);
+    cout<<"piece 1 apres mouvement 2D :" << get_square_2D(Plateau2D,l2,c2)<<endl;
+
+    return 0;
+}
